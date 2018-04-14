@@ -47,13 +47,17 @@ void VentController::set_pattern(String pattern) {
   for (int i = 0; i < pattern_length; i++) {
     char current_character = pattern.charAt(i);
 
+    if (_state[i] == current_character) continue;
+
     switch (current_character) {
     case '-':
       _vents[i]->actuate(0);
+      _state[i] = '-';
       break;
 
     case 'o':
       _vents[i]->actuate(1);
+      _state[i] = 'o';
       break;
     }
   }
