@@ -1,5 +1,6 @@
 // RoofWindowController.cpp
 #include "RoofWindowController.hpp"
+#include "Arduino.h"
 
 RoofWindowController::RoofWindowController(const int         *pins,
                                            const unsigned int count,
