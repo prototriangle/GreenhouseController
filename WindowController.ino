@@ -1,7 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#include "RoofWindowController.hpp"
+#include "VentController.hpp"
 
 #define ONE_WIRE_BUS 53
 #define TEMPERATURE_PRECISION 9 // Lower resolution
@@ -18,6 +18,9 @@ float t_cur;
 float t_prev;
 
 int lock = 0;
+
+bool   testing_mode = false;
+String last_input;
 
 const int roof_window_master_relay_pin = 12;
 const int roof_window_relay_pins[]     = {
@@ -64,24 +67,20 @@ char roof_window_states[] = {
 };
 
 
-const unsigned int roof_window_pattern_count = 7;
-String roof_window_patterns[]                = {
-  "cccccccc", // closed
-  "occcccco", // level 1
-  "ooccccoo", // level 2
-  "oooccooo", // level 3
-  "oooooooo"  // level 4
+const unsigned int pattern_count = 8;
+String patterns[]                = {
+  "--------|-/--/-/--", // closed
+  "--o--o--|-/--/-/--", // level 1
+  "--o--o--|-/-o/o/--", // level 2
+  "-oo--oo-|-/-o/o/--", // level 3
+  "-oo--oo-|o/-o/o/-o", // level 4
+  "ooo--ooo|o/-o/o/-o", // level 5
+  "oooooooo|o/-o/o/-o", // level 6
+  "oooooooo|o/oo/o/oo"  // level 7
 };
 
-const unsigned int louvre_vent_pattern_count = 5;
-String louvre_vent_patterns[]                = {
-  "cccccc", // closed
-  "occcco", // level 1
-  "ocooco", // level 2
-  "oooooo"  // level 3
-};
 
-int current_roof_window_pattern_index = -1;
+int current_pattern_index = -1;
 
 float temp_thresh_must_close  = 25.0;
 float temp_thresh_start_close = 27.0;
@@ -93,10 +92,15 @@ int switch_time = 500;
 const int all_open_pin   = A5;
 const int all_closed_pin = A6;
 
-RoofWindowController roof_window_controller = RoofWindowController(
+VentController roof_window_controller = VentController(
   roof_window_relay_pins,
   roof_window_count,
   roof_window_master_relay_pin);
+
+VentController louvre_vent_controller = VentController(
+  louvre_vent_relay_pins,
+  louvre_vent_count,
+  louvre_vent_master_relay_pin);
 
 void setup() {
   Serial.begin(9600);
@@ -124,61 +128,81 @@ void setup() {
   Serial.println(number_of_devices);
 }
 
+unsigned long next_loop_millis = 0UL;
+unsigned long period           = 180000UL;
+unsigned long testing_period   = 20000UL;
+
+
 void loop() {
-  readSerialString();
-  t_cur = getNewAverageTemperature();
+  unsigned long startMillis = millis();
 
-  if (t_cur <= temp_thresh_must_close) {
-    roof_window_controller.set_pattern("cccccccc");
-  }
-  else if (t_cur >= temp_thresh_open) {
-    if (current_roof_window_pattern_index <= 0) {
-      roof_window_controller.set_pattern(roof_window_patterns[1]);
+    readSerialString();
+
+  if (startMillis > next_loop_millis) {
+    Serial.println("Running main loop...");
+    next_loop_millis = testing_mode ? startMillis +
+                       testing_period : startMillis + period;
+    readSerialString();
+
+    t_cur = getNewAverageTemperature();
+
+    if (t_cur <= temp_thresh_must_close) {
+      String pattern = patterns[0];
+      roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
+      louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
     }
-    else if ((current_roof_window_pattern_index > 0) &&
-             (current_roof_window_pattern_index < roof_window_pattern_count -
-              1) &&
-             (t_cur - t_prev >= 0)) {
-      roof_window_controller.set_pattern(
-        roof_window_patterns[++
-                             current_roof_window_pattern_index
-        ]);
+    else if (t_cur >= temp_thresh_open) {
+      if (current_pattern_index <= 0) {
+        String pattern = patterns[1];
+        roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
+        louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
+      }
+      else if ((current_pattern_index > 0) &&
+               (current_pattern_index < pattern_count - 1) &&
+               (t_cur - t_prev >= 0)) {
+        current_pattern_index += 1;
+        String pattern = patterns[current_pattern_index];
+        roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
+        louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
+      }
     }
-  }
-  else if (t_cur <= temp_thresh_start_close) {
-    if ((current_roof_window_pattern_index > 0) && (t_cur - t_prev < 0)) {
-      roof_window_controller.set_pattern(
-        roof_window_patterns[--
-                             current_roof_window_pattern_index
-        ]);
+    else if (t_cur <= temp_thresh_start_close) {
+      if ((current_pattern_index > 0) && (t_cur - t_prev < 0)) {
+        current_pattern_index -= 1;
+        String pattern = patterns[current_pattern_index];
+        roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
+        louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
+      }
     }
+
+    t_prev = t_cur;
+    Serial.println("Main loop done");
   }
-
-  t_prev = t_cur;
-
-  if (t_cur < temp_thresh_must_close) {} else if (t_cur > temp_thresh_open) {}
-
-  for (int i = 0; i < 18; i++) {
-    delay(100);
-    float temp_t_cur = getNewAverageTemperature();
-  }
+  delay(40);
 }
 
 float getNewAverageTemperature() {
-  sensors.requestTemperatures(); // Send the command to get temperatures
-  float sum = 0.0;
-  Serial.print("Temperatures: ");
+  if (!testing_mode) {
+    sensors.requestTemperatures(); // Send the command to get temperatures
+    float sum = 0.0;
 
-  for (int i = 0; i < number_of_devices; i++) {
-    float t = sensors.getTempCByIndex(i);
-    Serial.print(t);
-    Serial.print(" | ");
-    sum += t;
+    Serial.print("Temperatures: ");
+
+    for (int i = 0; i < number_of_devices; i++) {
+      float t = sensors.getTempCByIndex(i);
+      Serial.print(t);
+      Serial.print(" | ");
+      sum += t;
+    }
+    float avg = sum / (float)number_of_devices;
+    Serial.print("\nAverage: ");
+    Serial.println(avg);
+    return avg;
   }
-  float avg = sum / (float)number_of_devices;
-  Serial.print("\nAverage: ");
-  Serial.println(avg);
-  return avg;
+  float t = last_input.toFloat();
+  Serial.print("Temperature: ");
+  Serial.println(t);
+  return t;
 }
 
 void readSerialString() {
@@ -190,5 +214,24 @@ void readSerialString() {
 
   if (str.length() > 0) {
     Serial.println(str);
+
+    if (str.equals("testing")) {
+      testing_mode = true;
+      Serial.println("Entering testing mode...");
+      next_loop_millis = millis();
+    } else if (str.equals("end testing")) {
+      testing_mode = false;
+      Serial.println("Leaving testing mode...");
+      next_loop_millis = millis();
+    }
+    last_input = str;
   }
+}
+
+String get_roof_window_pattern(String pattern) {
+  return pattern.substring(0, roof_window_count);
+}
+
+String get_louvre_vent_pattern(String pattern) {
+  return pattern.substring(roof_window_count + 1, pattern.length() - 1);
 }
