@@ -5,7 +5,7 @@
 class ReversibleRelayPair {
 private:
 
-  unsigned int switch_time = 500;
+  unsigned int switch_time = 100;
 
 protected:
 
