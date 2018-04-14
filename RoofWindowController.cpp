@@ -16,10 +16,11 @@ RoofWindowController::RoofWindowController(const int         *pins,
 
   _state.reserve(_roof_window_count);
 
-  for (int i = 0; i < _roof_window_count; i += 2) {
-    _roof_windows[i] = new RoofWindow(pins[i],
-                                      pins[i + 1],
+  for (int i = 0; i < _roof_window_count; i ++) {
+    _roof_windows[i] = new RoofWindow(pins[2 * i],
+                                      pins[2 * i + 1],
                                       master_pin);
+
     _state += 'u';
   }
 }
