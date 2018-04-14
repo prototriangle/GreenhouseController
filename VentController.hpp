@@ -8,7 +8,8 @@
 class VentController {
 public:
 
-  VentController(const int *pins,
+  VentController(const String id,
+                 const int *pins,
                  const unsigned int count,
                  const int master_pin);
   void   set_pattern(String pattern);
@@ -17,8 +18,9 @@ public:
 private:
 
   Vent **_vents;
-  int _vent_count = 0;
+  int    _vent_count = 0;
   String _state;
+  String _id;
 };
 
 #endif /* ifndef VENT_CONTROLLER_H */

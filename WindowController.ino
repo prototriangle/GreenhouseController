@@ -81,11 +81,13 @@ const int all_open_pin   = A5;
 const int all_closed_pin = A6;
 
 VentController roof_window_controller = VentController(
+  "Roof Window Controller",
   roof_window_relay_pins,
   roof_window_count,
   roof_window_master_relay_pin);
 
 VentController louvre_vent_controller = VentController(
+  "Louvre Vent Controller",
   louvre_vent_relay_pins,
   louvre_vent_count,
   louvre_vent_master_relay_pin);

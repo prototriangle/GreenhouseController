@@ -3,10 +3,11 @@
 #include "Vent.hpp"
 #include "Arduino.h"
 
-VentController::VentController(const int         *pins,
+VentController::VentController(const String       id,
+                               const int         *pins,
                                const unsigned int count,
                                const int          master_pin) :
-  _vent_count(count) {
+  _id(id), _vent_count(count) {
   if (count % 2 != 0) {
     return; // not of reversible type
   }
@@ -27,6 +28,7 @@ VentController::VentController(const int         *pins,
 }
 
 void VentController::set_pattern(String pattern) {
+  Serial.println("Controller id: " + _id);
   Serial.println("Set pattern: " + pattern);
   int pattern_length = pattern.length();
 
