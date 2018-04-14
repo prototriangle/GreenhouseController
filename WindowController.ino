@@ -3,8 +3,9 @@
 
 #include "RoofWindowController.hpp"
 
-#define ONE_WIRE_BUS 19
+#define ONE_WIRE_BUS 53
 #define TEMPERATURE_PRECISION 9 // Lower resolution
+
 
 OneWire           oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(& oneWire);
@@ -18,16 +19,16 @@ float t_prev;
 
 int lock = 0;
 
-const int roof_window_master_relay_pin = 10;
+const int roof_window_master_relay_pin = 12;
 const int roof_window_relay_pins[]     = {
-  9,  8,  // Roof Window 1
-  7,  6,  // Roof Window 2
-  5,  4,  // Roof Window 3
-  3,  2,  // Roof Window 4
-  14, 15, // Roof Window 5
-  16, 17, // Roof Window 6
-  18, 19, // Roof Window 7
-  20, 21  // Roof Window 8
+  11, 10, // Roof Window 1
+  9,  8,  // Roof Window 2
+  7,  6,  // Roof Window 3
+  5,  4,  // Roof Window 4
+  3,  2,  // Roof Window 5
+  14, 15, // Roof Window 6
+  16, 17, // Roof Window 7
+  18, 19  // Roof Window 8
 };
 const unsigned int roof_window_count = 8;
 
