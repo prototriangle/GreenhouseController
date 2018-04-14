@@ -16,7 +16,7 @@ Vent::Vent(int          forward_pin,
 }
 
 void Vent::actuate(int target) {
-  if ((target != 0) || (target != 1)) {
+  if ((target != 0) && (target != 1)) {
     return;
   }
   _master_relay->switch_off();
@@ -29,4 +29,6 @@ void Vent::actuate(int target) {
   _master_relay->switch_on();
   delay(_open_time);
   _master_relay->switch_off();
+  _relay_pair->disconnect_both();
+  Serial.println("done");
 }
