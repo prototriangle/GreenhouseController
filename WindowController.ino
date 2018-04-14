@@ -241,5 +241,9 @@ String get_roof_window_pattern(String pattern) {
 }
 
 String get_louvre_vent_pattern(String pattern) {
-  return pattern.substring(roof_window_count + 1, pattern.length() - 1);
+  String str = pattern.substring(roof_window_count + 1);
+  str.remove(1, 1);
+  str.remove(3, 1);
+  str.remove(4, 1);
+  return str;
 }
