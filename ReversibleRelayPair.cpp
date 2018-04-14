@@ -9,7 +9,9 @@ ReversibleRelayPair::ReversibleRelayPair(int forward_relay_pin,
   pinMode(_forward_relay_pin, OUTPUT);
   digitalWrite(_reverse_relay_pin, HIGH);
   pinMode(_reverse_relay_pin, OUTPUT);
-  delay(100);
+  // delay(100);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN,        LOW);
   digitalWrite(_forward_relay_pin, HIGH);
   digitalWrite(_reverse_relay_pin, HIGH);
 }
