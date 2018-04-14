@@ -93,12 +93,18 @@ int switch_time = 500;
 const int all_open_pin   = A5;
 const int all_closed_pin = A6;
 
-const RoofWindowController roof_window_controller = RoofWindowController(
+RoofWindowController roof_window_controller = RoofWindowController(
   roof_window_relay_pins,
   roof_window_count,
   roof_window_master_relay_pin);
 
 void setup() {
+  Serial.begin(9600);
+
+  while (!Serial) {
+    // wait for serial port to connect. Needed for native USB port only
+  }
+
   sensors.begin();
   number_of_devices = sensors.getDeviceCount();
 
@@ -132,10 +138,28 @@ void loop() {
 float getNewAverageTemperature() {
   sensors.requestTemperatures(); // Send the command to get temperatures
   float sum = 0.0;
+  Serial.print("Temperatures: ");
 
   for (int i = 0; i < number_of_devices; i++) {
     float t = sensors.getTempCByIndex(i);
+    Serial.print(t);
+    Serial.print(" | ");
     sum += t;
   }
-  return sum / (float)number_of_devices;
+  float avg = sum / (float)number_of_devices;
+  Serial.print("\nAverage: ");
+  Serial.println(avg);
+  return avg;
+}
+
+void readSerialString() {
+  String str = "";
+
+  while (Serial.available() > 0) {
+    str += (char)Serial.read();
+  }
+
+  if (str.length() > 0) {
+    Serial.println(str);
+  }
 }
