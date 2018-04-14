@@ -118,7 +118,7 @@ void setup() {
 
 unsigned long next_loop_millis = 0UL;
 unsigned long period           = 180000UL;
-unsigned long testing_period   = 20000UL;
+unsigned long testing_period   = 10000UL;
 
 
 void loop() {
