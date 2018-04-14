@@ -55,18 +55,6 @@ const int fan_relay_pins[]     = {
 };
 const unsigned int fan_count = 4;
 
-char roof_window_states[] = {
-  'u',
-  'u',
-  'u',
-  'u',
-  'u',
-  'u',
-  'u',
-  'u'
-};
-
-
 const unsigned int pattern_count = 8;
 String patterns[]                = {
   "--------|-/--/-/--", // closed
