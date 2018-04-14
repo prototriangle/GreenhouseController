@@ -64,25 +64,24 @@ char roof_window_states[] = {
 };
 
 
-const unsigned int roof_window_pattern_count = 5;
-unsigned int roof_window_patterns[]          = {
-  B00000000, // closed
-  B10000001, // level 1
-  B11000011, // level 2
-  B11100111, // level 3
-  B11111111  // level 4
+const unsigned int roof_window_pattern_count = 7;
+String roof_window_patterns[]                = {
+  "cccccccc", // closed
+  "occcccco", // level 1
+  "ooccccoo", // level 2
+  "oooccooo", // level 3
+  "oooooooo"  // level 4
 };
 
 const unsigned int louvre_vent_pattern_count = 5;
-unsigned int louvre_vent_patterns[]          = {
-  B000000, // closed
-  B000000, // level 1
-  B000000, // level 2
-  B000000, // level 3
-  B000000  // level 4
+String louvre_vent_patterns[]                = {
+  "cccccc", // closed
+  "occcco", // level 1
+  "ocooco", // level 2
+  "oooooo"  // level 3
 };
 
-int current_pattern_index = -1;
+int current_roof_window_pattern_index = -1;
 
 float temp_thresh_must_close  = 25.0;
 float temp_thresh_start_close = 27.0;
