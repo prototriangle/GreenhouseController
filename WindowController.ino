@@ -140,6 +140,8 @@ void loop() {
 
   if (startMillis > next_loop_millis) {
     Serial.println("Running main loop...");
+    Serial.print("Previous temp.: ");
+    Serial.println(t_prev);
     next_loop_millis = testing_mode ? startMillis +
                        testing_period : startMillis + period;
     readSerialString();
@@ -213,7 +215,7 @@ void readSerialString() {
   }
 
   if (str.length() > 0) {
-    Serial.println(str);
+    Serial.println("Input: " + str);
 
     if (str.equals("testing")) {
       testing_mode = true;
@@ -223,6 +225,10 @@ void readSerialString() {
       testing_mode = false;
       Serial.println("Leaving testing mode...");
       next_loop_millis = millis();
+    } else if (str.equals("index")) {
+      Serial.print("Pattern index: ");
+      Serial.println(current_pattern_index);
+      Serial.println(patterns[current_pattern_index]);
     }
     last_input = str;
   }

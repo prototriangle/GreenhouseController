@@ -27,6 +27,7 @@ VentController::VentController(const int         *pins,
 }
 
 void VentController::set_pattern(String pattern) {
+  Serial.println("Set pattern: " + pattern);
   int pattern_length = pattern.length();
 
   // validity checks
@@ -56,6 +57,8 @@ void VentController::set_pattern(String pattern) {
       break;
     }
   }
+
+  Serial.println("New state: " + _state);
 }
 
 String VentController::get_state() {
