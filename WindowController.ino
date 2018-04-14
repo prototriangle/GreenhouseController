@@ -150,12 +150,14 @@ void loop() {
 
     if (t_cur <= temp_thresh_must_close) {
       String pattern = patterns[0];
+      current_pattern_index = 1;
       roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
       louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
     }
     else if (t_cur >= temp_thresh_open) {
       if (current_pattern_index <= 0) {
         String pattern = patterns[1];
+        current_pattern_index = 0;
         roof_window_controller.set_pattern(get_roof_window_pattern(pattern));
         louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
       }
