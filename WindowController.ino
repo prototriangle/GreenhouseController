@@ -119,18 +119,47 @@ void setup() {
     sum += t;
   }
   t_prev = sum / (float)number_of_devices;
+  Serial.println("Begin");
+  Serial.print("temp. sensor count: ");
+  Serial.println(number_of_devices);
 }
 
 void loop() {
-  t_cur  = getNewAverageTemperature();
+  readSerialString();
+  t_cur = getNewAverageTemperature();
+
+  if (t_cur <= temp_thresh_must_close) {
+    roof_window_controller.set_pattern("cccccccc");
+  }
+  else if (t_cur >= temp_thresh_open) {
+    if (current_roof_window_pattern_index <= 0) {
+      roof_window_controller.set_pattern(roof_window_patterns[1]);
+    }
+    else if ((current_roof_window_pattern_index > 0) &&
+             (current_roof_window_pattern_index < roof_window_pattern_count -
+              1) &&
+             (t_cur - t_prev >= 0)) {
+      roof_window_controller.set_pattern(
+        roof_window_patterns[++
+                             current_roof_window_pattern_index
+        ]);
+    }
+  }
+  else if (t_cur <= temp_thresh_start_close) {
+    if ((current_roof_window_pattern_index > 0) && (t_cur - t_prev < 0)) {
+      roof_window_controller.set_pattern(
+        roof_window_patterns[--
+                             current_roof_window_pattern_index
+        ]);
+    }
+  }
+
   t_prev = t_cur;
 
-  if (t_cur < temp_thresh_must_close) {
-    roof_window_controller.set_pattern("cccccccc");
-  } else if (t_cur > temp_thresh_open) {}
+  if (t_cur < temp_thresh_must_close) {} else if (t_cur > temp_thresh_open) {}
 
   for (int i = 0; i < 18; i++) {
-    delay(10000);
+    delay(100);
     float temp_t_cur = getNewAverageTemperature();
   }
 }
