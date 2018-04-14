@@ -2,10 +2,8 @@
 #include "ReversibleRelayPair.hpp"
 #include "Arduino.h"
 ReversibleRelayPair::ReversibleRelayPair(int forward_relay_pin,
-                                         int reverse_relay_pin) {
-  _forward_relay_pin = forward_relay_pin;
-  _reverse_relay_pin = reverse_relay_pin;
-
+                                         int reverse_relay_pin) :
+  _forward_relay_pin(forward_relay_pin), _reverse_relay_pin(reverse_relay_pin) {
   // Initialisation
   digitalWrite(_forward_relay_pin, HIGH);
   pinMode(_forward_relay_pin, OUTPUT);
