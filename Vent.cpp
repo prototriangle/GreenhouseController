@@ -19,6 +19,7 @@ void Vent::actuate(int target) {
   if ((target != 0) && (target != 1)) {
     return;
   }
+  Serial.print("Actuating vent...");
   _master_relay->switch_off();
 
   if (target == 0) {
