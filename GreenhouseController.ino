@@ -25,12 +25,12 @@ String last_input;
 const int roof_window_master_relay_pin = 12;
 const int roof_window_relay_pins[]     = {
   11, 10, // Roof Window 1
-  9,  8,  // Roof Window 2
-  7,  6,  // Roof Window 3
-  5,  4,  // Roof Window 4
-  3,  2,  // Roof Window 5
-  14, 15, // Roof Window 6
-  16, 17, // Roof Window 7
+  3,  2,  // Roof Window 2
+  9,  8,  // Roof Window 3
+  14, 15, // Roof Window 4
+  7,  6,  // Roof Window 5
+  16, 17, // Roof Window 6
+  5,  4,  // Roof Window 7
   18, 19  // Roof Window 8
 };
 const unsigned int roof_window_count = 8;
