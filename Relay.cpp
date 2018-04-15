@@ -10,12 +10,12 @@ Relay::Relay(int pin) {
 }
 
 void Relay::switch_on() {
-  digitalWrite(_pin, HIGH);
+  digitalWrite(_pin, LOW);
   delay(switch_time);
 }
 
 void Relay::switch_off() {
-  digitalWrite(_pin, LOW);
+  digitalWrite(_pin, HIGH);
   delay(switch_time);
 }
 
