@@ -11,9 +11,6 @@ OneWire           oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(& oneWire);
 int number_of_devices; // Number of temperature devices
 
-int temp_to_open  = 30;
-int temp_to_close = 26;
-
 float t_cur;
 float t_prev;
 
