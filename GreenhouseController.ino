@@ -67,6 +67,7 @@ String patterns[]                = {
 
 int current_pattern_index = -1;
 
+// Threshold temperature variables
 float temp_thresh_must_close  = 25.0;
 float temp_thresh_start_close = 27.0;
 float temp_thresh_open        = 30.0;
@@ -134,7 +135,7 @@ void loop() {
     readSerialString();
 
     t_cur = getNewAverageTemperature();
-
+    /* Start main logic */
     if (t_cur <= temp_thresh_must_close) {
       String pattern = patterns[0];
       current_pattern_index = 1;
@@ -165,6 +166,7 @@ void loop() {
         louvre_vent_controller.set_pattern(get_louvre_vent_pattern(pattern));
       }
     }
+    /* End main logic */
 
     t_prev = t_cur;
     Serial.println("Main loop done");
